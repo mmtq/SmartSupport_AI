@@ -50,7 +50,7 @@ class EmailFetcher:
         """Fetch new unread emails using the Gmail API."""
         try:
             service = build('gmail', 'v1', credentials=self.creds)
-            results = service.users().messages().list(userId='me', q='is:unread', maxResults=5).execute()
+            results = service.users().messages().list(userId='me', q='category:primary is:unread', maxResults=5).execute()
             messages = results.get('messages', [])
 
             new_emails = []
@@ -69,6 +69,12 @@ class EmailFetcher:
                             id=message['id'],
                             body={'removeLabelIds': ['UNREAD']}
                         ).execute()
+                    # new_emails.append(email_data)
+                    # service.users().messages().modify(
+                    #     userId='me',
+                    #     id=message['id'],
+                    #     body={'removeLabelIds': ['UNREAD']}
+                    # ).execute()
             print(f"Found {len(new_emails)} new emails.")
             return new_emails
 
@@ -85,11 +91,15 @@ class EmailFetcher:
         for header in headers:
             if header['name'] == 'From':
                 sender_name, sender_addr = self.parse_sender(header['value'])
+            if header['name'] == 'Subject':
+                subject = header['value']
 
         return {
-            "email_message": msg,
+            # "email_message": msg,
             "sender_name": sender_name,
-            "sender_addr": sender_addr
+            "sender_addr": sender_addr,
+            "subject": subject,
+            "body": msg['snippet']
         }
 
     @staticmethod
@@ -123,15 +133,13 @@ class EmailFetcher:
 
 if __name__ == "__main__":
     fetcher = EmailFetcher()
-    # new_emails = fetcher.fetch_new_emails()
+    new_emails = fetcher.fetch_new_emails()
 
-    # # print new emails
-    
-    # for email in new_emails:
-    #     print(f"Sender: {email['sender_name']} <{email['sender_addr']}>")
-    #     print(f"Subject: {email['email_message']['snippet']}")
-    #     print(f"Body: {email['email_message']['snippet']}")
-    #     print("=" * 50)
+    for email in new_emails:
+        print(f"Sender: {email['sender_name']} <{email['sender_addr']}>")
+        print(f"Subject: {email['subject']}")
+        print(f"Body: {email['body']}")
+        print("=" * 50)
 
     # Example of sending an email
     fetcher.send_mail(recipient="mirsalmanfarsi@gmail.com", subject="Test Subject", body="This is a test email.")
