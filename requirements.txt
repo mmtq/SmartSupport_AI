@@ -1,5 +1,8 @@
 google_api_python_client==2.160.0
 google_auth_oauthlib==1.2.1
+langchain==0.3.17
+langchain_core==0.3.33
+langchain_groq==0.2.4
 protobuf==5.29.3
 PyYAML==6.0.2
 PyYAML==6.0.2

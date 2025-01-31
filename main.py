@@ -20,4 +20,4 @@ if __name__ == "__main__":
                     print(f"Sending reply: {evaluation_result}")
                     fetcher.send_mail(recipient=email['sender_addr'], subject=f"Re: {email['subject']}", body=evaluation_result)
 
-        time.sleep(60)
+        time.sleep(10)
